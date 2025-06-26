@@ -7,6 +7,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema mydb
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `mydb` ;
 
 -- -----------------------------------------------------
 -- Schema mydb
@@ -15,27 +16,44 @@ CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
 USE `mydb` ;
 
 -- -----------------------------------------------------
+-- Table `mydb`.`Products`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Products` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Products` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `mydb`.`Clients`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Clients` ;
+
 CREATE TABLE IF NOT EXISTS `mydb`.`Clients` (
-  `name` VARCHAR(45) NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL,
   `adress` VARCHAR(45) NULL,
-  PRIMARY KEY (`name`))
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
 -- Table `mydb`.`Orders`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Orders` ;
+
 CREATE TABLE IF NOT EXISTS `mydb`.`Orders` (
-  `numbers` INT NOT NULL,
-  `client_name` VARCHAR(45) NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `client_id` INT NULL,
   `order_date` DATETIME NULL,
-  PRIMARY KEY (`numbers`),
-  INDEX `fk_orders_clients_idx` (`client_name` ASC) VISIBLE,
+  PRIMARY KEY (`id`),
+  INDEX `fk_orders_clients_idx` (`client_id` ASC) VISIBLE,
   CONSTRAINT `fk_orders_clients`
-    FOREIGN KEY (`client_name`)
-    REFERENCES `mydb`.`Clients` (`name`)
+    FOREIGN KEY (`client_id`)
+    REFERENCES `mydb`.`Clients` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -44,14 +62,22 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `mydb`.`Order_Details`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Order_Details` ;
+
 CREATE TABLE IF NOT EXISTS `mydb`.`Order_Details` (
-  `number` INT NOT NULL,
-  `product_name` VARCHAR(45) NOT NULL,
-  `quantity` VARCHAR(45) NULL,
-  PRIMARY KEY (`number`, `product_name`),
+  `order_id` INT NOT NULL AUTO_INCREMENT,
+  `product_id` INT NOT NULL,
+  `quantity` INT NULL,
+  PRIMARY KEY (`order_id`, `product_id`),
+  INDEX `fk_order_datails_products_idx` (`product_id` ASC) VISIBLE,
+  CONSTRAINT `fk_order_datails_products`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `mydb`.`Products` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
   CONSTRAINT `fk_order_details_orders`
-    FOREIGN KEY (`number`)
-    REFERENCES `mydb`.`Orders` (`numbers`)
+    FOREIGN KEY (`order_id`)
+    REFERENCES `mydb`.`Orders` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
